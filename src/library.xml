@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<library name="library">
+    <singer singer_name="Joji">
+        <album album_name="Nectar">
+            <track track_name="Daylight" length="243"/>
+            <track track_name="EW" length="327"/>
+            <track track_name="Hello from client" length="26"/>
+            <track track_name="Upgrade" length="129"/>
+            <track track_name="Run" length="315"/>
+            <track track_name="Gimmie Love" length="334"/>
+            <track track_name="MODUS" length="327"/>
+            <track track_name="Tick Tock" length="212"/>
+        </album>
+        <album album_name="In Tongues">
+            <track track_name="Pills" length="307"/>
+            <track track_name="Hello from client" length="26"/>
+            <track track_name="Will He" length="322"/>
+            <track track_name="Demons" length="256"/>
+        </album>
+        <album album_name="BALLADS 1">
+            <track track_name="Hello from client" length="26"/>
+            <track track_name="ATTENTION" length="208"/>
+            <track track_name="SLOW DANCING IN THE DARK" length="329"/>
+            <track track_name="TEST DRIVE" length="259"/>
+        </album>
+    </singer>
+    <singer singer_name="AC/DC">
+        <album album_name="The Razors Edge">
+            <track track_name="Hello from client" length="26"/>
+            <track track_name="The Razors Edge" length="422"/>
+            <track track_name="Thunderstruck" length="452"/>
+            <track track_name="Money Talks" length="345"/>
+            <track track_name="Fire Your Guns" length="253"/>
+        </album>
+    </singer>
+    <singer singer_name="Scorpions">
+        <album album_name="Face The Heat">
+            <track track_name="No Pain No Gain" length="355"/>
+            <track track_name="Someone To Touch" length="429"/>
+            <track track_name="Hello from client" length="26"/>
+            <track track_name="Alien Nation" length="544"/>
+            <track track_name="Under The Same Sun" length="451"/>
+            <track track_name="Unholy Alliance" length="517"/>
+        </album>
+    </singer>
+</library>
