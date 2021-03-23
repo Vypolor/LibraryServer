@@ -96,37 +96,17 @@ public class Album implements Serializable {
             tracksList.append(track.toString());
         }
 
-        return "\n\t=============================="+"\n\tmodel.Album Name: " + getAlbum_name()
+        return "\n\t=============================="+"\n\tAlbum Name: " + getAlbum_name()
                 + tracksList.toString()
                 + "\n";
     }
 
-    public static Singer fromXmlToObject(String filePath) {
-        try {
-            // создаем объект JAXBContext - точку входа для JAXB
-            JAXBContext jaxbContext = JAXBContext.newInstance(Album.class);
-            Unmarshaller un = jaxbContext.createUnmarshaller();
+    public Track getTrackByName(String trackName){
+        for(Track track: getTracks())
+            if(track.getTrack_name().equals(trackName))
+                return track;
 
-            return (Singer) un.unmarshal(new File(filePath));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
         return null;
-    }
-
-    // сохраняем объект в XML файл
-    public static void convertObjectToXml(Singer singer, String filePath) {
-        try {
-            JAXBContext context = JAXBContext.newInstance(Album.class);
-            Marshaller marshaller = context.createMarshaller();
-            // устанавливаем флаг для читабельного вывода XML в JAXB
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-            // маршаллинг объекта в файл
-            marshaller.marshal(singer, new File(filePath));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
     }
 
 }

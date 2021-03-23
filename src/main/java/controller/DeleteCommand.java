@@ -4,13 +4,13 @@ import TransportObjects.Response;
 import model.Album;
 import model.Library;
 import model.Singer;
+import model.Track;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
 public class DeleteCommand extends Command{
-    private final String path = "src/library.xml";
 
     public DeleteCommand(Library library, String parameter, String[] args) {
         super(library, parameter, args);
@@ -20,41 +20,69 @@ public class DeleteCommand extends Command{
     public Response execute() throws ParserConfigurationException, SAXException, IOException {
         Response response = new Response(100);
         switch (parameter){
-            case "singer":
+            case "-singer":
                 return delSinger(args[0], response);
-            case "album":
+            case "-album":
                 return delAlbum(args[0], args[1], response);
+            case "-track":
+                return delTrack(args[0], args[1], args[2], response);
+            default:
+                response.setCode(505);
         }
         return null;
     }
 
-    public Response delAlbum(String singerName, String albumName, Response response) throws IOException, SAXException, ParserConfigurationException {
-
-        Album album = new Album(albumName);
-
-        if(library.getSingerByName(singerName).deleteAlbum(album)){
-            Library.convertObjectToXml(library, path);
-            response = GetCommand.getAlbums(response, singerName);
-            response.setCode(11);
+    private Response delTrack(String singerName, String albumName, String trackName, Response response){
+        response.setCode(4);
+        if(library.getSingerByName(singerName) == null) {
+            response.setCode(230);
+            return response;
         }
-        else
-            response.setCode(404);
+
+        if(library.getSingerByName(singerName).getAlbumByName(albumName) == null) {
+            response.setCode(220);
+            return response;
+        }
+
+        Track track = library.getSingerByName(singerName).getAlbumByName(albumName).getTrackByName(trackName);
+
+        if(!library.getSingerByName(singerName).getAlbumByName(albumName).deleteTrack(track)) {
+            response.setCode(210);
+            return response;
+        }
 
         return response;
     }
 
-    public Response delSinger(String singerName, Response response) throws IOException, SAXException, ParserConfigurationException {
+    private Response delAlbum(String singerName, String albumName, Response response){
+
+        response.setCode(5);
+
+        if(library.getSingerByName(singerName) == null) {
+            response.setCode(230);
+            return response;
+        }
+
+        Album album = library.getSingerByName(singerName).getAlbumByName(albumName);
+
+        if(!library.getSingerByName(singerName).deleteAlbum(album)) {
+            response.setCode(220);
+            return response;
+        }
+
+        return response;
+    }
+
+    private Response delSinger(String singerName, Response response){
 
         Singer singer = new Singer(singerName);
+        response.setCode(6);
 
-        if(library.deleteSinger(singer)){
-            Library.convertObjectToXml(library, path);
-            response = GetCommand.getSingers(response);
-            response.setCode(10);
-        }
-        else {
+        if(!library.deleteSinger(singer)) {
             response.setCode(230);
+            return response;
         }
+
         return response;
     }
 }

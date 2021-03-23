@@ -25,7 +25,7 @@ import java.util.*;
 @XmlRootElement(name = "library")
 @XmlType(propOrder = {"name", "singers"})
 public class Library implements Serializable {
-    private static Library instance;
+    public static Library instance;
 
     private String name;
     private Set<Singer> singers = new HashSet<>();
@@ -122,7 +122,7 @@ public class Library implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder singersList = new StringBuilder("model.Library " + getName() + ": \n");
+        StringBuilder singersList = new StringBuilder("Library: \n");
 
         for (Singer singer : singers) {
             singersList.append(singer.toString());

@@ -55,8 +55,8 @@ public class Track implements Serializable {
     @Override
     public String toString() {
         return  "\t\t=========================="
-                + "\n\t\tmodel.Track Name: " + getTrack_name()
-                + "\n\t\tmodel.Track Length: " + getLength()
+                + "\n\t\tTrack Name: " + getTrack_name()
+                + "\n\t\tTrack Length: " + getLength()/3600 + ":" + getLength()/60 + ":" + (getLength()-getLength()/60)
                 + "\n";
     }
 }

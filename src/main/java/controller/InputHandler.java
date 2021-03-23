@@ -19,9 +19,15 @@ public class InputHandler {
     private final Map<String, Class<? extends Command>> commands = new HashMap<>();
     private String path = "src/library.xml";
     {
-        commands.put("get", GetCommand.class);
-        commands.put("add", AddCommand.class);
-        commands.put("delete", DeleteCommand.class);
+        commands.put("/get", GetCommand.class);
+        commands.put("/add", AddCommand.class);
+        commands.put("/delete", DeleteCommand.class);
+        commands.put("/help", HelpCommand.class);
+        commands.put("/disconnect", DisconnectCommand.class);
+        commands.put("/edit", EditCommand.class);
+        commands.put("/load", LoadCommand.class);
+        commands.put("/save", SaveCommand.class);
+        commands.put("/search", SearchCommand.class);
     }
 
     public InputHandler(Request request){
@@ -42,13 +48,13 @@ public class InputHandler {
         return response;
     }
 
-    public void sendCode(int code, OutputHandler outputHandler){
+    public void sendCode(int code, OutputHandler outputHandler) throws IOException {
         outputHandler.errorHandler(code, getRequest().getCommand(), getRequest().getParameter(), getRequest().getArgs());
     }
 
     private Command invokeCommand() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, IOException, SAXException, ParserConfigurationException {
         return commands.get(getRequest().getCommand())
                 .getDeclaredConstructor(Library.class, String.class, String[].class)
-                .newInstance(Library.fromXmlToObject(path), getRequest().getParameter(), getRequest().getArgs());
+                .newInstance(Library.getInstance(), getRequest().getParameter(), getRequest().getArgs());
     }
 }

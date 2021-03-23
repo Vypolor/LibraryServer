@@ -2,23 +2,12 @@ package controller;
 
 import TransportObjects.Response;
 import model.Library;
-import model.Singer;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.*;
-import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 public class GetCommand extends Command{
-    static File file = new File("src/library.xml");
 
     public GetCommand(Library library, String parameter, String[] args) {
         super(library, parameter, args);
@@ -29,23 +18,23 @@ public class GetCommand extends Command{
 
         Response response = new Response(100);
         switch (parameter){
-            case "singer":
+            case "-singer":
                 return getSingers(response);
-            case "album":
+            case "-album":
                 return getAlbums(response, args[0]);
-            case "track":
+            case "-track":
                 return getTracks(response, args[0], args[1]);
             default:
                 return null;
         }
     }
     //изменить на protected
-    public static Response getTracks(Response response, String singerName, String albumName) throws ParserConfigurationException, IOException, SAXException {
-        Set<String> tracks = new HashSet<>();
+    private Response getTracks(Response response, String singerName, String albumName) throws ParserConfigurationException, IOException, SAXException {
+        /*Set<String> tracks = new HashSet<>();
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(file);
+        Document document = builder.parse(new File(path));
 
         NodeList singersList = document.getDocumentElement().getElementsByTagName("singer");
 
@@ -90,18 +79,20 @@ public class GetCommand extends Command{
             }
         }
         response.setArgs(tracks);
-        response.setCode(100);
+        response.setCode(100);*/
+        response.setAnswer(library.getSingerByName(singerName).getAlbumByName(albumName).toString());
+        response.setCode(1);
 
         return response;
     }
 
     //изменить на protected
-    public static Response getAlbums(Response response, String singerName) throws ParserConfigurationException, IOException, SAXException {
-        Set<String> albums = new HashSet<>();
+    private Response getAlbums(Response response, String singerName) throws ParserConfigurationException, IOException, SAXException {
+        /*Set<String> albums = new HashSet<>();
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(file);
+        Document document = builder.parse(new File(path));
 
         NodeList singersList = document.getDocumentElement().getElementsByTagName("singer");
         for(int i = 0; i < singersList.getLength(); ++i){
@@ -132,20 +123,18 @@ public class GetCommand extends Command{
             }
         }
         response.setArgs(albums);
-        response.setCode(100);
+        response.setCode(100);*/
+        response.setAnswer(library.getSingerByName(singerName).toString());
+        response.setCode(0);
 
         return response;
     }
 
-    //изменить на protected
-    //getting all singers name from xml
-    //добавить code в Response
-    public static Response getSingers(Response response) throws ParserConfigurationException, SAXException, IOException {
-
-        Set<String> singers = new HashSet<>();
+    private Response getSingers(Response response) throws ParserConfigurationException, SAXException, IOException {
+        /*Set<String> singers = new HashSet<>();a
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(file);
+        Document document = builder.parse(new File(path));
 
         NodeList singersList = document.getDocumentElement().getElementsByTagName("singer");
         for(int i = 0; i < singersList.getLength(); ++i){
@@ -157,8 +146,10 @@ public class GetCommand extends Command{
         }
         response.setArgs(singers);
         //изменить для отчета
-        response.setCode(6);
-        
+        response.setCode(6);*/
+        response.setAnswer(library.toString());
+        response.setCode(0);
+
         return response;
     }
 }

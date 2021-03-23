@@ -3,6 +3,7 @@ package TransportObjects;
 import java.io.Serializable;
 
 public class Request implements Serializable  {
+    private static Request instance;
     private String command;
     private String parameter;
     private String[] args;
@@ -12,6 +13,15 @@ public class Request implements Serializable  {
         this.parameter = parameter;
         this.args = args;
     }
+
+    public static Request getInstance(){
+        if (instance == null){
+            instance = new Request();
+        }
+        return instance;
+    }
+
+    public Request(){}
 
     public String getCommand() {
         return command;

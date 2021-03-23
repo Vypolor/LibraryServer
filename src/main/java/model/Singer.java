@@ -73,6 +73,14 @@ public class Singer implements Serializable {
         return albums;
     }
 
+    public Album getAlbumByName(String albumName){
+        for(Album album: getAlbums())
+            if(album.getAlbum_name().equals(albumName))
+                return album;
+
+        return null;
+    }
+
     public void setAlbums(Set<Album> albums) {
         this.albums = albums;
     }
@@ -98,35 +106,7 @@ public class Singer implements Serializable {
             albumsList.append(album.toString());
         }
 
-        return "=================================="+"\nmodel.Singer: " + getSinger_name()
+        return "=================================="+"\nSinger: " + getSinger_name()
                 + albumsList.toString();
-    }
-
-    public static Singer fromXmlToObject(String filePath) {
-        try {
-            // создаем объект JAXBContext - точку входа для JAXB
-            JAXBContext jaxbContext = JAXBContext.newInstance(Singer.class);
-            Unmarshaller un = jaxbContext.createUnmarshaller();
-
-            return (Singer) un.unmarshal(new File(filePath));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    // сохраняем объект в XML файл
-    public static void convertObjectToXml(Singer singer, String filePath) {
-        try {
-            JAXBContext context = JAXBContext.newInstance(Singer.class);
-            Marshaller marshaller = context.createMarshaller();
-            // устанавливаем флаг для читабельного вывода XML в JAXB
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-            // маршаллинг объекта в файл
-            marshaller.marshal(singer, new File(filePath));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
     }
 }
