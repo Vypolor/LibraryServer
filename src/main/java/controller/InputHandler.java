@@ -40,12 +40,29 @@ public class InputHandler {
 
     public Response performRequest() throws InvocationTargetException,
             NoSuchMethodException, InstantiationException, IllegalAccessException, ParserConfigurationException, SAXException, IOException {
-        Response response = invokeCommand().execute();
+        boolean flag = false;
+        for(Map.Entry<String, Class<? extends Command>> command : commands.entrySet()){
+            String key = command.getKey();
+            if(key.equals(request.getCommand())){
+                flag = true;
+            }
+        }
 
-        OutputHandler oh = new OutputHandler();
-        sendCode(response.getCode(), oh);
+        Response response = new Response();
 
-        return response;
+        if(flag == true){
+            response = invokeCommand().execute();
+
+            OutputHandler oh = new OutputHandler();
+            sendCode(response.getCode(), oh);
+
+            return response;
+        }
+        else {
+            response.setCode(808);
+            return response;
+        }
+
     }
 
     public void sendCode(int code, OutputHandler outputHandler) throws IOException {

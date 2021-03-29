@@ -25,8 +25,9 @@ public class GetCommand extends Command{
             case "-track":
                 return getTracks(response, args[0], args[1]);
             default:
-                return null;
+                response.setCode(500);
         }
+        return response;
     }
     //изменить на protected
     private Response getTracks(Response response, String singerName, String albumName) throws ParserConfigurationException, IOException, SAXException {
@@ -81,7 +82,7 @@ public class GetCommand extends Command{
         response.setArgs(tracks);
         response.setCode(100);*/
         response.setAnswer(library.getSingerByName(singerName).getAlbumByName(albumName).toString());
-        response.setCode(1);
+        response.setCode(12);
 
         return response;
     }
@@ -125,7 +126,7 @@ public class GetCommand extends Command{
         response.setArgs(albums);
         response.setCode(100);*/
         response.setAnswer(library.getSingerByName(singerName).toString());
-        response.setCode(0);
+        response.setCode(11);
 
         return response;
     }
@@ -148,7 +149,7 @@ public class GetCommand extends Command{
         //изменить для отчета
         response.setCode(6);*/
         response.setAnswer(library.toString());
-        response.setCode(0);
+        response.setCode(10);
 
         return response;
     }

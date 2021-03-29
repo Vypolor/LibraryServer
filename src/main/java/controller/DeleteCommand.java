@@ -27,9 +27,9 @@ public class DeleteCommand extends Command{
             case "-track":
                 return delTrack(args[0], args[1], args[2], response);
             default:
-                response.setCode(505);
+                response.setCode(500);
         }
-        return null;
+        return response;
     }
 
     private Response delTrack(String singerName, String albumName, String trackName, Response response){

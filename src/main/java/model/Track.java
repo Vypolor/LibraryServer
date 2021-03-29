@@ -54,9 +54,29 @@ public class Track implements Serializable {
 
     @Override
     public String toString() {
+        long now = getLength();
+        String sHour = "";
+        String sMinutes = "";
+        int hour = (int)getLength()/3600;
+        if(hour > 9){
+            sHour = Integer.toString(hour);
+        }
+        else {
+            sHour = "0" + hour;
+        }
+        now = getLength() - (3600*hour);
+        int minutes = (int)getLength()/60;
+        if(minutes > 9){
+            sMinutes = Integer.toString(minutes);
+        }
+        else {
+            sMinutes = "0" + minutes;
+        }
+        now = getLength() - (60*minutes);
         return  "\t\t=========================="
                 + "\n\t\tTrack Name: " + getTrack_name()
-                + "\n\t\tTrack Length: " + getLength()/3600 + ":" + getLength()/60 + ":" + (getLength()-getLength()/60)
+                + "\n\t\tTrack Length: " + sHour + ":" + sMinutes
+                + ":" + now
                 + "\n";
     }
 }

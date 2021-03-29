@@ -28,9 +28,9 @@ public class AddCommand extends Command{
             case "-track":
                 return addTrack(args[0], args[1], args[2], args[3], response);
             default:
-                response.setCode(505);
+                response.setCode(500);
         }
-        return null;
+        return response;
     }
 
     private Response addTrack(String singerName, String albumName, String newTrack, String length, Response response){
