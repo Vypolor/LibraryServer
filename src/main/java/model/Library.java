@@ -1,7 +1,8 @@
 package model;
 
-import TransportObjects.Response;
-import controller.GetCommand;
+import exceptions.AttemptCreateDuplicateException;
+import exceptions.EntityOutOfLibraryException;
+import exceptions.NullArgumentException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -11,7 +12,6 @@ import org.xml.sax.SAXException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -25,7 +25,8 @@ import java.util.*;
 @XmlRootElement(name = "library")
 @XmlType(propOrder = {"name", "singers"})
 public class Library implements Serializable {
-    public static Library instance;
+
+    private static Library instance;
 
     private String name;
     private Set<Singer> singers = new HashSet<>();
@@ -33,9 +34,9 @@ public class Library implements Serializable {
     public Library() {
     }
 
-    public Library(String name){
+    /*public Library(String name){
         this.name = name;
-    }
+    }*/
 
     private Library(String name, Set<Singer> singers) {
         this.name = name;
@@ -55,31 +56,48 @@ public class Library implements Serializable {
         getInstance().setSingers(singers);
     }
 
-    public boolean addSinger(Singer addSinger) {
+    public Singer addSinger(String newSinger) throws NullArgumentException, AttemptCreateDuplicateException {
 
-        for(Singer singer: singers)
-            if(singer.getSinger_name().equals(addSinger.getSinger_name()))
-                return false;
+        if(newSinger == null || newSinger.equals(""))
+        {
+            throw new NullArgumentException();
+        }
 
-        singers.add(addSinger);
-        return true;
+        Singer singer = new Singer(newSinger);
+
+        if(singers.contains(singer))
+        {
+            throw new AttemptCreateDuplicateException(OperationStatus.DUPLICATE_SINGER_IN_LIBRARY.getCode());
+        }
+
+        singers.add(singer);
+        return singer;
     }
 
-    public boolean editSinger(Singer oldSinger, Singer newSinger) {
+    public Singer editSinger(String oldSinger, String newSinger) throws EntityOutOfLibraryException, NullArgumentException, AttemptCreateDuplicateException {
         if (deleteSinger(oldSinger))
             return addSinger(newSinger);
 
-        return false;
+        return null;
     }
 
-    public boolean deleteSinger(Singer delSinger){
-        for(Singer singer: singers)
-            if(singer.getSinger_name().equals(delSinger.getSinger_name())){
-                singers.remove(delSinger);
-                return true;
-            }
+    public boolean deleteSinger(String singerName) throws NullArgumentException, EntityOutOfLibraryException {
+        if(singerName == null || singerName.equals(""))
+        {
+            throw new NullArgumentException();
+        }
 
-        return false;
+        Singer singer = new Singer(singerName);
+
+        if(singers.contains(singer))
+        {
+            singers.remove(singer);
+            return true;
+        }
+        else
+        {
+            throw new EntityOutOfLibraryException(OperationStatus.SINGER_OUT_OF_LIBRARY.getCode());
+        }
     }
     @XmlAttribute
     public String getName() {
@@ -97,7 +115,7 @@ public class Library implements Serializable {
 
     public Singer getSingerByName(String singerName){
         for(Singer singer : getSingers()){
-            if(singer.getSinger_name().equals(singerName))
+            if(singer.getSingerName().equals(singerName))
                 return singer;
         }
         return null;
@@ -146,7 +164,7 @@ public class Library implements Serializable {
 
     }
 
-    public static Library fromXmlToObject(String filePath) throws ParserConfigurationException, IOException, SAXException {
+    public static Library fromXmlToObject(String filePath) throws ParserConfigurationException, IOException, SAXException, AttemptCreateDuplicateException, NullArgumentException {
         Set<Singer> sin = new HashSet<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -184,12 +202,12 @@ public class Library implements Serializable {
 
                     Node tr = tracksAttributes.getNamedItem("track_name");
                     Node le = tracksAttributes.getNamedItem("length");
-                    Track track = new Track(tr.getNodeValue(),
-                            Long.parseLong(le.getNodeValue()));
-                    album.addTrack(track);
+                    /*Track track = new Track(tr.getNodeValue(),
+                            Long.parseLong(le.getNodeValue()));*/
+                    album.addTrack(tr.getNodeValue(), Long.parseLong(le.getNodeValue()));
 
                 }
-                sINGER.addAlbum(album);
+                sINGER.addAlbum(album.getAlbumName());
             }
             sin.add(sINGER);
         }

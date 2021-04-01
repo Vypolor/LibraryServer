@@ -1,28 +1,30 @@
 package model;
 
+import utils.TimeParser;
+
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.Objects;
 
 @XmlRootElement(name = "track")
 
-@XmlType(propOrder = {"track_name", "length"})
+@XmlType(propOrder = {"trackName", "length"})
 public class Track implements Serializable {
 
-    private String track_name;
-    private long length;
+    private String trackName;
+    private long length = 0;
 
     public Track() {
     }
 
     public Track(String track_name, long length) {
-        this.track_name = track_name;
+        this.trackName = track_name;
         this.length = length;
     }
 
     @XmlAttribute(name = "track_name")
-    public String getTrack_name() {
-        return track_name;
+    public String getTrackName() {
+        return trackName;
     }
 
     @XmlAttribute
@@ -30,10 +32,9 @@ public class Track implements Serializable {
         return length;
     }
 
-    public void setTrack_name(String track_name) {
-        this.track_name = track_name;
+    public void setTrackName(String trackName) {
+        this.trackName = trackName;
     }
-
 
     public void setLength(long time) {
         this.length = time;
@@ -44,39 +45,16 @@ public class Track implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Track track = (Track) o;
-        return Objects.equals(track_name, track.track_name);
+        return Objects.equals(trackName, track.trackName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(track_name);
+        return Objects.hash(trackName);
     }
 
     @Override
     public String toString() {
-        long now = getLength();
-        String sHour = "";
-        String sMinutes = "";
-        int hour = (int)getLength()/3600;
-        if(hour > 9){
-            sHour = Integer.toString(hour);
-        }
-        else {
-            sHour = "0" + hour;
-        }
-        now = getLength() - (3600*hour);
-        int minutes = (int)getLength()/60;
-        if(minutes > 9){
-            sMinutes = Integer.toString(minutes);
-        }
-        else {
-            sMinutes = "0" + minutes;
-        }
-        now = getLength() - (60*minutes);
-        return  "\t\t=========================="
-                + "\n\t\tTrack Name: " + getTrack_name()
-                + "\n\t\tTrack Length: " + sHour + ":" + sMinutes
-                + ":" + now
-                + "\n";
+        return TimeParser.parseLength(this.getTrackName(), this.getLength());
     }
 }

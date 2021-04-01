@@ -1,71 +1,89 @@
 package model;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import exceptions.AttemptCreateDuplicateException;
+import exceptions.EntityOutOfLibraryException;
+import exceptions.NullArgumentException;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.io.File;
 import java.io.Serializable;
 import java.util.*;
 
 @XmlRootElement(name = "singer")
-@XmlType(propOrder = {"singer_name", "albums"})
+@XmlType(propOrder = {"singerName", "albums"})
 public class Singer implements Serializable {
 
-    private String singer_name;
+    private String singerName;
     private Set<Album> albums = new HashSet<>();
 
     public Singer() {
     }
 
     public Singer(String singer_name) {
-        this.singer_name = singer_name;
+        this.singerName = singer_name;
     }
 
     public Singer(String singer_name, Set<Album> albums) {
-        this.singer_name = singer_name;
+        this.singerName = singer_name;
         this.albums = albums;
     }
 
-    public boolean addAlbum(Album addAlbum) {
+    public Album addAlbum(String newAlbum) throws NullArgumentException, AttemptCreateDuplicateException {
 
-        for(Album album: albums)
-            if(album.getAlbum_name().equals(addAlbum.getAlbum_name()))
-                return false;
+        if(newAlbum == null || newAlbum.equals(""))
+        {
+            throw new NullArgumentException();
+        }
 
-        albums.add(addAlbum);
-        return true;
+        Album album = new Album(newAlbum);
+
+        if(albums.contains(album))
+        {
+            throw new AttemptCreateDuplicateException(OperationStatus.DUPLICATE_ALBUM_IN_SINGER.getCode());
+        }
+
+        albums.add(album);
+        return album;
     }
 
-    public boolean editAlbum(Album oldAlbum, Album newAlbum) {
+    public Album editAlbum(String oldAlbum, String newAlbum) throws EntityOutOfLibraryException, NullArgumentException, AttemptCreateDuplicateException {
         if (deleteAlbum(oldAlbum))
+        {
             return addAlbum(newAlbum);
+        }
 
-        return false;
+        return null;
     }
 
-    public boolean deleteAlbum(Album delAlbum) {
+    public boolean deleteAlbum(String albumName) throws NullArgumentException, EntityOutOfLibraryException {
 
-        for(Album album: albums)
-            if(album.getAlbum_name().equals(delAlbum.getAlbum_name())){
-                albums.remove(delAlbum);
-                return true;
-            }
+        if(albumName == null || albumName.equals(""))
+        {
+            throw new NullArgumentException();
+        }
 
-        return false;
+        Album album = new Album(albumName);
+
+        if(albums.contains(album))
+        {
+            albums.remove(album);
+            return true;
+        }
+        else
+        {
+            throw new EntityOutOfLibraryException(OperationStatus.ALBUM_OUT_OF_SINGER.getCode());
+        }
     }
 
     @XmlAttribute(name = "singer_name")
-    public String getSinger_name() {
-        return singer_name;
+    public String getSingerName() {
+        return singerName;
     }
 
-    public void setSinger_name(String singer_name) {
-        this.singer_name = singer_name;
+    public void setSingerName(String singerName) {
+        this.singerName = singerName;
     }
 
     @XmlElement(name = "album")
@@ -75,7 +93,7 @@ public class Singer implements Serializable {
 
     public Album getAlbumByName(String albumName){
         for(Album album: getAlbums())
-            if(album.getAlbum_name().equals(albumName))
+            if(album.getAlbumName().equals(albumName))
                 return album;
 
         return null;
@@ -90,12 +108,12 @@ public class Singer implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Singer singer = (Singer) o;
-        return Objects.equals(singer_name, singer.singer_name);
+        return Objects.equals(singerName, singer.singerName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(singer_name);
+        return Objects.hash(singerName);
     }
 
     @Override
@@ -106,7 +124,7 @@ public class Singer implements Serializable {
             albumsList.append(album.toString());
         }
 
-        return "=================================="+"\nSinger: " + getSinger_name()
+        return "=================================="+"\nSinger: " + getSingerName()
                 + albumsList.toString();
     }
 }
