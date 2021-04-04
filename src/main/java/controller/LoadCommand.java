@@ -1,24 +1,17 @@
 package controller;
 
-import TransportObjects.Response;
+import controller.commands.Command;
+import transport.Response;
 import model.Library;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 
-public class LoadCommand extends Command{
+public class LoadCommand extends Command {
     public LoadCommand(Library library, String parameter, String[] args) {
-        super(library, parameter, args);
+        super(library, args);
     }
 
     @Override
@@ -35,8 +28,8 @@ public class LoadCommand extends Command{
     }*/
 
     private Response load(String libString, Response response) throws ParserConfigurationException, IOException, SAXException {
-        File file = new File("src/tmp.xml");
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        File file = new File("src/library.xml");
+        /*DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         try {
             Document document = docBuilder.parse(new InputSource(new StringReader(libString)));
@@ -45,7 +38,7 @@ public class LoadCommand extends Command{
             Source src = new DOMSource(document);
             Result dest = new StreamResult(file);
             transformer.transform(src, dest);
-            Library.instance = Library.fromXmlToObject("src/tmp.xml");
+            Library.instance = Library.fromXmlToObject(libString);
             file.delete();
             System.out.println(library.toString());
         } catch (SAXException e) {
@@ -56,8 +49,9 @@ public class LoadCommand extends Command{
             e.printStackTrace();
         } catch (TransformerException e) {
             e.printStackTrace();
-        }
+        }*/
         response.setCode(507);
+        //Library.instance = Library.fromXmlToObject("src/library.xml");
         return response;
     }
 }

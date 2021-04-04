@@ -1,9 +1,12 @@
 package controller;
 
-import TransportObjects.Request;
-import TransportObjects.Response;
+import controller.commands.*;
+import model.OperationStatus;
+import transport.Request;
+import transport.Response;
 import model.Library;
 import org.xml.sax.SAXException;
+import utils.CheckRequestValidity;
 import view.OutputHandler;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -17,17 +20,30 @@ public class InputHandler {
 
     private Request request;
     private final Map<String, Class<? extends Command>> commands = new HashMap<>();
-    private String path = "src/library.xml";
     {
-        commands.put("/get", GetCommand.class);
-        commands.put("/add", AddCommand.class);
-        commands.put("/delete", DeleteCommand.class);
+        commands.put("/add-singer", AddSinger.class);
+        commands.put("/add-album", AddAlbum.class);
+        commands.put("/add-track", AddTrack.class);
+
+        commands.put("/delete-singer", DeleteSinger.class);
+        commands.put("/delete-album", DeleteAlbum.class);
+        commands.put("/delete-track", DeleteTrack.class);
+
+        commands.put("/edit-singer", EditSinger.class);
+        commands.put("/edit-album", EditAlbum.class);
+        commands.put("/edit-track", EditTrack.class);
+
+        commands.put("/get-singer", PrintLibrary.class);
+        commands.put("/get-album", PrintSinger.class);
+        commands.put("/get-track", PrintAlbum.class);
+
         commands.put("/help", HelpCommand.class);
         commands.put("/disconnect", DisconnectCommand.class);
-        commands.put("/edit", EditCommand.class);
         commands.put("/load", LoadCommand.class);
         commands.put("/save", SaveCommand.class);
-        commands.put("/search", SearchCommand.class);
+        commands.put("/search-singer", SimpleSearch.class);
+        commands.put("/search-album", SimpleSearchSinger.class);
+        commands.put("/search-track", SimpleSearch.class);
     }
 
     public InputHandler(Request request){
@@ -40,28 +56,29 @@ public class InputHandler {
 
     public Response performRequest() throws InvocationTargetException,
             NoSuchMethodException, InstantiationException, IllegalAccessException, ParserConfigurationException, SAXException, IOException {
-        boolean flag = false;
-        for(Map.Entry<String, Class<? extends Command>> command : commands.entrySet()){
-            String key = command.getKey();
-            if(key.equals(request.getCommand())){
-                flag = true;
-            }
-        }
 
         Response response = new Response();
+        int validRequestStatus = CheckRequestValidity.checkCommand(request.getCommand(), request.getParameter());
 
-        if(flag == true){
-            response = invokeCommand().execute();
+        if(validRequestStatus == OperationStatus.COMPLETE.getCode())
+        {
+            String executeCommandName = "";
+            if(request.getParameter() == null){
+                executeCommandName = request.getCommand();
+            }
+            else {
+                executeCommandName = request.getCommand()+request.getParameter();
+            }
+            response = findCommand(executeCommandName).execute();
 
             OutputHandler oh = new OutputHandler();
             sendCode(response.getCode(), oh);
-
-            return response;
         }
-        else {
-            response.setCode(808);
-            return response;
+        else
+        {
+            response.setCode(validRequestStatus);
         }
+        return response;
 
     }
 
@@ -69,9 +86,9 @@ public class InputHandler {
         outputHandler.errorHandler(code, getRequest().getCommand(), getRequest().getParameter(), getRequest().getArgs());
     }
 
-    private Command invokeCommand() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, IOException, SAXException, ParserConfigurationException {
-        return commands.get(getRequest().getCommand())
-                .getDeclaredConstructor(Library.class, String.class, String[].class)
-                .newInstance(Library.getInstance(), getRequest().getParameter(), getRequest().getArgs());
+    private Command findCommand(String executeCommandName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return commands.get(executeCommandName)
+                .getDeclaredConstructor(Library.class, String[].class)
+                .newInstance(Library.getInstance(), getRequest().getArgs());
     }
 }

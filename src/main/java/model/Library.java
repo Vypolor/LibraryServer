@@ -1,6 +1,6 @@
 package model;
 
-import exceptions.AttemptCreateDuplicateException;
+import exceptions.DuplicateException;
 import exceptions.EntityOutOfLibraryException;
 import exceptions.NullArgumentException;
 import org.w3c.dom.Document;
@@ -23,12 +23,11 @@ import java.io.*;
 import java.util.*;
 
 @XmlRootElement(name = "library")
-@XmlType(propOrder = {"name", "singers"})
+@XmlType(propOrder = {"singers"})
 public class Library implements Serializable {
 
     private static Library instance;
 
-    private String name;
     private Set<Singer> singers = new HashSet<>();
 
     public Library() {
@@ -38,12 +37,11 @@ public class Library implements Serializable {
         this.name = name;
     }*/
 
-    private Library(String name, Set<Singer> singers) {
-        this.name = name;
+    private Library(Set<Singer> singers) {
         this.singers = singers;
     }
 
-    public static Library getInstance() {
+    public static synchronized Library getInstance() {
         if (instance == null) {
             instance = new Library();
         }
@@ -51,12 +49,11 @@ public class Library implements Serializable {
         return instance;
     }
 
-    public static void setAll(String name, Set<Singer> singers) {
-        getInstance().setName(name);
+    public void setSingersInstance(Set<Singer> singers) {
         getInstance().setSingers(singers);
     }
 
-    public Singer addSinger(String newSinger) throws NullArgumentException, AttemptCreateDuplicateException {
+    public Singer addSinger(String newSinger) throws NullArgumentException, DuplicateException {
 
         if(newSinger == null || newSinger.equals(""))
         {
@@ -67,18 +64,23 @@ public class Library implements Serializable {
 
         if(singers.contains(singer))
         {
-            throw new AttemptCreateDuplicateException(OperationStatus.DUPLICATE_SINGER_IN_LIBRARY.getCode());
+            throw new DuplicateException(OperationStatus.DUPLICATE_SINGER_IN_LIBRARY.getCode());
         }
 
         singers.add(singer);
         return singer;
     }
 
-    public Singer editSinger(String oldSinger, String newSinger) throws EntityOutOfLibraryException, NullArgumentException, AttemptCreateDuplicateException {
-        if (deleteSinger(oldSinger))
-            return addSinger(newSinger);
-
-        return null;
+    public Singer editSinger(String oldSinger, String newSinger) throws EntityOutOfLibraryException, NullArgumentException, DuplicateException {
+        Singer singer = new Singer(newSinger);
+        if(singers.contains(singer)){
+            throw new DuplicateException(OperationStatus.DUPLICATE_SINGER_IN_LIBRARY.getCode());
+        }
+        else {
+            getSingerByName(oldSinger).setSingerName(newSinger);
+            singer = getSingerByName(newSinger);
+        }
+        return singer;
     }
 
     public boolean deleteSinger(String singerName) throws NullArgumentException, EntityOutOfLibraryException {
@@ -99,26 +101,19 @@ public class Library implements Serializable {
             throw new EntityOutOfLibraryException(OperationStatus.SINGER_OUT_OF_LIBRARY.getCode());
         }
     }
-    @XmlAttribute
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     @XmlElement(name = "singer")
     public Set<Singer> getSingers() {
         return singers;
     }
 
-    public Singer getSingerByName(String singerName){
-        for(Singer singer : getSingers()){
+    public Singer getSingerByName(String singerName) throws EntityOutOfLibraryException {
+        for(Singer singer : getSingers())
+        {
             if(singer.getSingerName().equals(singerName))
                 return singer;
         }
-        return null;
+        throw new EntityOutOfLibraryException(OperationStatus.SINGER_OUT_OF_LIBRARY.getCode());
     }
 
     public void setSingers(Set<Singer> singers) {
@@ -126,16 +121,8 @@ public class Library implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Library library = (Library) o;
-        return Objects.equals(name, library.name);
-    }
-
-    @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(singers);
     }
 
     @Override
@@ -149,22 +136,7 @@ public class Library implements Serializable {
         return singersList.toString();
     }
 
-    public static void convertObjectToXml(Library library, String filePath) throws ParserConfigurationException, IOException, SAXException {
-        try {
-            JAXBContext context = JAXBContext.newInstance(Library.class);
-            Marshaller marshaller = context.createMarshaller();
-            // устанавливаем флаг для читабельного вывода XML в JAXB
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-            // маршаллинг объекта в файл
-            marshaller.marshal(library, new File(filePath));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public static Library fromXmlToObject(String filePath) throws ParserConfigurationException, IOException, SAXException, AttemptCreateDuplicateException, NullArgumentException {
+    public static Library fromXmlToObject(String filePath) throws ParserConfigurationException, IOException, SAXException, DuplicateException, NullArgumentException {
         Set<Singer> sin = new HashSet<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -211,7 +183,7 @@ public class Library implements Serializable {
             }
             sin.add(sINGER);
         }
-        Library library = new Library("library", sin);
+        Library library = new Library(sin);
         return library;
     }
 }

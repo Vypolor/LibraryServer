@@ -1,6 +1,7 @@
 package controller.commands;
 
 import model.OperationStatus;
+import transport.Request;
 import transport.Response;
 
 import model.Library;
@@ -11,14 +12,12 @@ import java.io.IOException;
 
 public abstract class Command {
     public Library library;
-    public final String parameter;
     public final String[] args;
     public Response response;
 
 
-    public Command(Library library, String parameter, String[] args) {
+    public Command(Library library, String[] args) {
         this.library = library;
-        this.parameter = parameter;
         this.args = args;
         this.response = new Response(OperationStatus.EMPTY_RESPONSE.getCode());
     }

@@ -2,7 +2,9 @@ package model;
 
 public enum OperationStatus {
 
-    EMPTY_RESPONSE(0),
+    EMPTY_RESPONSE(-1),
+
+    COMPLETE(0),
 
     TRACK_ADDED(1),
     ALBUM_ADDED(2),
@@ -20,6 +22,11 @@ public enum OperationStatus {
     PRINT_ALBUMS(11),
     PRINT_TRACKS(12),
 
+    SUCCESSFUL(13),
+
+    NULL_KEY_IN_REQUEST(15),
+    MISSING_TRACK_LENGTH(16),
+
     TRACK_OUT_OF_ALBUM(210),
     ALBUM_OUT_OF_SINGER(220),
     SINGER_OUT_OF_LIBRARY(230),
@@ -31,6 +38,7 @@ public enum OperationStatus {
     INVALID_PATH(404),
     INVALID_KEY_VALUE(500),
 
+    INCORRECT_FILE_RESOLUTION(504),
     SAVE_COMPLETE(505),
     SEARCH_COMPLETE(506),
     LOAD_COMPLETE(507),

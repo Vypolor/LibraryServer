@@ -1,6 +1,6 @@
 package model;
 
-import exceptions.AttemptCreateDuplicateException;
+import exceptions.DuplicateException;
 import exceptions.EntityOutOfLibraryException;
 import exceptions.NullArgumentException;
 
@@ -29,7 +29,7 @@ public class Album implements Serializable {
         this.tracks = tracks;
     }
 
-    public Track addTrack(String newTrack, long length) throws NullArgumentException, AttemptCreateDuplicateException {
+    public Track addTrack(String newTrack, long length) throws NullArgumentException, DuplicateException {
 
         if(newTrack == null || newTrack.equals("") || (length == 0))
         {
@@ -40,7 +40,7 @@ public class Album implements Serializable {
 
         if(tracks.contains(track))
         {
-            throw new AttemptCreateDuplicateException(OperationStatus.DUPLICATE_TRACK_IN_ALBUM.getCode());
+            throw new DuplicateException(OperationStatus.DUPLICATE_TRACK_IN_ALBUM.getCode());
         }
 
         tracks.add(track);
@@ -48,14 +48,18 @@ public class Album implements Serializable {
     }
 
     public Track editTrack(String oldTrack, String newTrack, long newTrackLength) throws EntityOutOfLibraryException
-            , NullArgumentException, AttemptCreateDuplicateException {
+            , NullArgumentException, DuplicateException {
 
-        if (deleteTrack(oldTrack))
-        {
-            return addTrack(newTrack, newTrackLength);
+        Track track = new Track(newTrack, newTrackLength);
+        if(tracks.contains(track)){
+            throw new DuplicateException(OperationStatus.DUPLICATE_TRACK_IN_ALBUM.getCode());
         }
-
-        return null;
+        else {
+            getTrackByName(oldTrack).setTrackName(newTrack);
+            getTrackByName(newTrack).setLength(newTrackLength);
+            track = getTrackByName(newTrack);
+        }
+        return track;
     }
 
     public boolean deleteTrack(String trackName) throws NullArgumentException, EntityOutOfLibraryException {
@@ -121,12 +125,14 @@ public class Album implements Serializable {
                 + "\n";
     }
 
-    public Track getTrackByName(String trackName){
+    public Track getTrackByName(String trackName) throws EntityOutOfLibraryException {
         for(Track track: getTracks())
-            if(track.getTrackName().equals(trackName))
+        {
+            if (track.getTrackName().equals(trackName))
                 return track;
+        }
 
-        return null;
+        throw new EntityOutOfLibraryException(OperationStatus.TRACK_OUT_OF_ALBUM.getCode());
     }
 
 }

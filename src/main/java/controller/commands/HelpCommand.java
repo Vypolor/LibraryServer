@@ -1,23 +1,18 @@
-package controller;
+package controller.commands;
 
-import TransportObjects.Response;
-import model.Album;
+import controller.commands.Command;
+import model.OperationStatus;
+import transport.Response;
 import model.Library;
-import model.Singer;
-import model.Track;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class HelpCommand extends Command{
+public class HelpCommand extends Command {
 
-    public HelpCommand(Library library, String parameter, String[] args) {
-        super(library, parameter, args);
+    public HelpCommand(Library library, String[] args) {
+        super(library, args);
     }
 
     @Override
@@ -46,7 +41,7 @@ public class HelpCommand extends Command{
                 "Print all albums by an singer: /get\"-track\"\"singer name\"\"album name\"\n";
         System.out.println(help);
         response.setAnswer(help);
-        response.setCode(0);
+        response.setCode(OperationStatus.COMPLETE.getCode());
         return response;
     }
 

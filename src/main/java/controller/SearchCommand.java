@@ -1,6 +1,8 @@
 package controller;
 
-import TransportObjects.Response;
+import controller.commands.Command;
+import exceptions.EntityOutOfLibraryException;
+import transport.Response;
 import model.Album;
 import model.Library;
 import model.Singer;
@@ -14,9 +16,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SearchCommand extends Command{
+public class SearchCommand extends Command {
     public SearchCommand(Library library, String parameter, String[] args) {
-        super(library, parameter, args);
+        super(library, args);
     }
 
     @Override
@@ -24,8 +26,7 @@ public class SearchCommand extends Command{
         Response response = new Response(800);
         if(args[0].contains("*")|| args[0].contains("?"))
             return patternSearch(args[0], response);
-        else
-            simpleSearch(args[0], response);
+
         return response;
     }
 
@@ -42,9 +43,9 @@ public class SearchCommand extends Command{
         for(Singer singer: library.getSingers()){
             for (Album album: singer.getAlbums()){
                 for(Track track: album.getTracks()){
-                    matcher = p.matcher(track.getTrack_name());
+                    matcher = p.matcher(track.getTrackName());
                     if(matcher.find()){
-                        findResult.add(singer.getSinger_name() + " | " + album.getAlbum_name() + " | " + track.getTrack_name());
+                        findResult.add(singer.getSingerName() + " | " + album.getAlbumName() + " | " + track.getTrackName());
                     }
                 }
             }
@@ -54,19 +55,19 @@ public class SearchCommand extends Command{
         return response;
     }
 
-    private Response simpleSearch(String search, Response response){
+    /*private Response simpleSearch(String search, Response response) throws EntityOutOfLibraryException {
         Set<String> findResult = new HashSet<>();
         Track track;
         for(Singer singer: library.getSingers()){
             for(Album album: singer.getAlbums()){
                 if((track = album.getTrackByName(search)) != null){
-                    findResult.add(singer.getSinger_name() + " | " + album.getAlbum_name() + " | " + track.getTrack_name());
+                    findResult.add(singer.getSingerName() + " | " + album.getAlbumName() + " | " + track.getTrackName());
                 }
             }
         }
         response.setArgs(findResult);
         response.setCode(506);
         return response;
-    }
+    }*/
 
 }

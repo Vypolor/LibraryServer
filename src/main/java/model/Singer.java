@@ -1,6 +1,6 @@
 package model;
 
-import exceptions.AttemptCreateDuplicateException;
+import exceptions.DuplicateException;
 import exceptions.EntityOutOfLibraryException;
 import exceptions.NullArgumentException;
 
@@ -30,7 +30,7 @@ public class Singer implements Serializable {
         this.albums = albums;
     }
 
-    public Album addAlbum(String newAlbum) throws NullArgumentException, AttemptCreateDuplicateException {
+    public Album addAlbum(String newAlbum) throws NullArgumentException, DuplicateException {
 
         if(newAlbum == null || newAlbum.equals(""))
         {
@@ -41,20 +41,23 @@ public class Singer implements Serializable {
 
         if(albums.contains(album))
         {
-            throw new AttemptCreateDuplicateException(OperationStatus.DUPLICATE_ALBUM_IN_SINGER.getCode());
+            throw new DuplicateException(OperationStatus.DUPLICATE_ALBUM_IN_SINGER.getCode());
         }
 
         albums.add(album);
         return album;
     }
 
-    public Album editAlbum(String oldAlbum, String newAlbum) throws EntityOutOfLibraryException, NullArgumentException, AttemptCreateDuplicateException {
-        if (deleteAlbum(oldAlbum))
-        {
-            return addAlbum(newAlbum);
+    public Album editAlbum(String oldAlbum, String newAlbum) throws EntityOutOfLibraryException, NullArgumentException, DuplicateException {
+        Album album = new Album(newAlbum);
+        if(albums.contains(album)){
+            throw new DuplicateException(OperationStatus.DUPLICATE_ALBUM_IN_SINGER.getCode());
         }
-
-        return null;
+        else {
+            getAlbumByName(oldAlbum).setName(newAlbum);
+            album = getAlbumByName(newAlbum);
+        }
+        return album;
     }
 
     public boolean deleteAlbum(String albumName) throws NullArgumentException, EntityOutOfLibraryException {
@@ -91,12 +94,13 @@ public class Singer implements Serializable {
         return albums;
     }
 
-    public Album getAlbumByName(String albumName){
+    public Album getAlbumByName(String albumName) throws EntityOutOfLibraryException {
         for(Album album: getAlbums())
-            if(album.getAlbumName().equals(albumName))
+        {
+            if (album.getAlbumName().equals(albumName))
                 return album;
-
-        return null;
+        }
+        throw new EntityOutOfLibraryException(OperationStatus.ALBUM_OUT_OF_SINGER.getCode());
     }
 
     public void setAlbums(Set<Album> albums) {
@@ -124,7 +128,7 @@ public class Singer implements Serializable {
             albumsList.append(album.toString());
         }
 
-        return "=================================="+"\nSinger: " + getSingerName()
+        return "\n=================================="+"\nSinger: " + getSingerName()
                 + albumsList.toString();
     }
 }
