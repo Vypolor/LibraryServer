@@ -19,14 +19,14 @@ public class SaveCommand extends Command{
     @Override
     public Response execute() throws ParserConfigurationException, SAXException, IOException {
         String path = args[0];
-        int validityStatus = CheckRequestValidity.checkPathValidity(path);
-        if(validityStatus == OperationStatus.COMPLETE.getCode()){
+        OperationStatus validityStatus = CheckRequestValidity.checkPathValidity(path);
+        if(validityStatus.equals(OperationStatus.COMPLETE)){
             File file = new File(path);
             DataConverter.convertLibraryToXml(library, path);
             response.setCode(OperationStatus.SAVE_COMPLETE.getCode());
         }
         else {
-            response.setCode(validityStatus);
+            response.setCode(validityStatus.getCode());
         }
         return response;
     }

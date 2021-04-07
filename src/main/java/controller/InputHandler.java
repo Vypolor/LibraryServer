@@ -39,7 +39,8 @@ public class InputHandler {
 
         commands.put("/help", HelpCommand.class);
         commands.put("/disconnect", DisconnectCommand.class);
-        commands.put("/load", LoadCommand.class);
+        commands.put("/load", SimpleLoadCommand.class);
+        commands.put("/mergeload", MergeLoadCommand.class);
         commands.put("/save", SaveCommand.class);
         commands.put("/search-singer", SimpleSearch.class);
         commands.put("/search-album", SimpleSearchSinger.class);
@@ -58,9 +59,9 @@ public class InputHandler {
             NoSuchMethodException, InstantiationException, IllegalAccessException, ParserConfigurationException, SAXException, IOException {
 
         Response response = new Response();
-        int validRequestStatus = CheckRequestValidity.checkCommand(request.getCommand(), request.getParameter());
+        OperationStatus validRequestStatus = CheckRequestValidity.checkCommand(request.getCommand(), request.getParameter());
 
-        if(validRequestStatus == OperationStatus.COMPLETE.getCode())
+        if(validRequestStatus.equals(OperationStatus.COMPLETE))
         {
             String executeCommandName = "";
             if(request.getParameter() == null){
@@ -76,7 +77,7 @@ public class InputHandler {
         }
         else
         {
-            response.setCode(validRequestStatus);
+            response.setCode(validRequestStatus.getCode());
         }
         return response;
 
