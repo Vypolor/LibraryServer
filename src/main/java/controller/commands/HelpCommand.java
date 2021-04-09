@@ -68,7 +68,7 @@ public class HelpCommand extends Command {
                         "Print all library:             /get\"-singer\"\n"+
                         "Print all albums by an singer: /get\"-album\"\"singer name\"\n"+
                         "Print all albums by an singer: /get\"-track\"\"singer name\"\"album name\"\n";
-        //System.out.println(help);
+
         response.setAnswer(help);
         response.setCode(OperationStatus.COMPLETE.getCode());
         return response;

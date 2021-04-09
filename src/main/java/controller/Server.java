@@ -20,8 +20,8 @@ class Server extends Thread {
     private Library library;
     private int id;
 
-    public Server(Socket s, int userId) throws IOException {
-        socket = s;
+    public Server(Socket socket, int userId) throws IOException {
+        this.socket = socket;
         oos = new ObjectOutputStream(
                 socket.getOutputStream());
 

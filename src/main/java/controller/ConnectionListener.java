@@ -13,14 +13,14 @@ public class ConnectionListener {
     }
 
     public void start() throws IOException {
-        int id = 0;
+        int id = 1;
         try{
             while (true){
                 Socket socket = serverSocket.accept();
                 try {
                     Server newConnection = new Server(socket, id);
                     System.out.println("User #" + id + " connected");
-                    newConnection.run();
+                    newConnection.start();
                     ++id;
                 }
                 catch (IOException e){

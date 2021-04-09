@@ -13,6 +13,7 @@ import java.util.*;
 @XmlType(propOrder = {"albumName", "tracks"})
 public class Album implements Serializable {
 
+    @XmlAttribute(name = "album_name")
     private String albumName;
     private Set<Track> tracks = new HashSet<>();
 
@@ -82,7 +83,7 @@ public class Album implements Serializable {
         }
     }
 
-    @XmlAttribute(name = "album_name")
+
     public String getAlbumName() {
         return albumName;
     }

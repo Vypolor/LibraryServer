@@ -22,7 +22,6 @@ public class PrintAlbum extends Command{
         try {
             response.setAnswer(library.getSingerByName(singerName).getAlbumByName(albumName).toString());
         } catch (EntityOutOfLibraryException e) {
-            //e.printStackTrace();
             response.setCode(e.getCode());
             return response;
         }
